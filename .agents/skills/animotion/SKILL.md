@@ -1,0 +1,1341 @@
+---
+name: animotion
+description: Creating beautiful animated presentations with Animotion
+---
+
+## Available Resources
+
+### Animotion Documentation
+
+- **Full Documentation**: https://animotion.pages.dev/llms.txt - Complete Animotion documentation in LLM-friendly format (included below)
+- **Live Documentation**: https://animotion.pages.dev/docs - Interactive documentation website
+
+### Svelte Documentation
+
+Since Animotion is built on Svelte, you should also reference Svelte's documentation:
+
+- **Svelte Full Docs**: https://svelte.dev/llms-full.txt - Complete Svelte, SvelteKit, and CLI documentation
+- **Svelte Medium Docs**: https://svelte.dev/llms-medium.txt - Compressed for medium context windows
+- **Svelte Small Docs**: https://svelte.dev/llms-small.txt - Highly compressed for smaller context windows
+- **Svelte Core**: https://svelte.dev/docs/svelte/llms.txt - Svelte framework specific
+- **SvelteKit**: https://svelte.dev/docs/kit/llms.txt - SvelteKit specific
+- **Svelte Interactive Docs**: https://svelte.dev - Main documentation site
+
+## Capabilities
+
+When helping with this project, you can:
+
+- Answer questions about Animotion's API and features
+- Help create presentations using Animotion components (`Presentation`, `Slide`, `Action`, `Code`, etc.)
+- Provide code examples using the Animotion framework
+- Reference the complete documentation at https://animotion.pages.dev/llms.txt
+- Debug issues with Animotion presentations
+- Help with slide layouts and styling
+- Assist with code highlighting and syntax features
+- Guide on using Svelte components within presentations
+- Assist with Svelte-specific syntax and features (reactivity, stores, lifecycle, etc.)
+- Help with SvelteKit routing and project structure
+
+## Context
+
+Animotion is a Svelte-based presentation framework that allows you to create beautiful animated presentations. Since it's built on Svelte and often used with SvelteKit, understanding Svelte's reactive patterns, component structure, and lifecycle is essential for effective use.
+
+Key components include:
+
+- `<Presentation>` - Main container for slides
+- `<Slide>` - Individual slide component
+- `<Action>` - For step-by-step animations
+- `<Code>` - For syntax-highlighted code blocks
+- Animation utilities and transition effects
+
+For complete API documentation, examples, and detailed guides:
+
+- **Animotion**: https://animotion.pages.dev/llms.txt or https://animotion.pages.dev
+- **Svelte**: https://svelte.dev/llms-full.txt or https://svelte.dev
+
+
+---
+
+# ----- Full Docs ----- #
+
+# Slides
+
+## Creating slides
+
+To create a slide use the `<Slide>` component inside the `<Presentation>` component:
+
+<Slides />
+
+```svelte
+<script>
+  import { Presentation, Slide } from '@animotion/core';
+</script>
+
+<Presentation>
+  <Slide class="h-full place-content-center place-items-center">
+    <p class="text-8xl font-bold drop-shadow-sm">🪄 Animotion</p>
+  </Slide>
+
+  <Slide class="h-full place-content-center place-items-center">
+    <img class="rounded-lg drop-shadow-sm" src="/nod-of-approval.gif" />
+  </Slide>
+</Presentation>
+```
+
+The `<Slide>` component uses CSS grid by default for the layout, so it's not necessary to specify the display mode.
+
+## Slide events
+
+You can use the `in` and `out` props to pass a callback which runs when the slide enters and exits the viewport:
+
+<Events />
+
+```svelte
+<script>
+  import { Presentation, Slide } from '@animotion/core';
+</script>
+
+<Presentation>
+  <Slide in={() => alert('slide 1 enter')} out={() => alert('slide 1 exit')}>
+    <p class="text-8xl font-bold drop-shadow-sm">Slide 1</p>
+  </Slide>
+
+  <Slide in={() => alert('slide 2 enter')} out={() => alert('slide 2 exit')}>
+    <p class="text-8xl font-bold drop-shadow-sm">Slide 2</p>
+  </Slide>
+</Presentation>
+```
+
+## Components
+
+Svelte is a declarative JavaScript framework, so components are a great way to organize, and make your code reusable. This could be a `<Progress>` component inside the `lib` folder:
+
+<Components />
+
+```svelte
+<script>
+  import { Slide } from '@animotion/core';
+  import { tween } from '@animotion/motion';
+
+  let progress = tween(0);
+
+  async function animate() {
+    await progress.to(1_000_000);
+  }
+</script>
+
+<button onclick={animate}>
+  {progress.current.toLocaleString('en', { maximumFractionDigits: 0 })}
+</button>
+```
+
+You can import, and use the `<Progress>` component inside the slide:
+
+```svelte
+<script>
+  import { Presentation, Slide } from '@animotion/core';
+  import Progress from '$lib/progress.svelte';
+</script>
+
+<Presentation>
+  <Slide>
+    <Progress />
+  </Slide>
+</Presentation>
+```
+
+## Presentation Options
+
+The `disableLayout` option toggles the built-in Reveal.js layout engine and enforces a fixed aspect ratio, auto-centers content, and scales slides uniformly using CSS transforms to fit any screen size. You can disable it through the `options` prop if you want control over the layout:
+
+```svelte
+<script>
+  import { Presentation } from '@animotion/core';
+</script>
+
+<Presentation options={{
+  // default aspect ratio
+  width: 960px,
+  height: 700px,
+
+  // disable the default layout
+  disableLayout: true,
+
+  // other options
+  transition: 'slide',
+  display: 'grid'
+}}>
+  <!-- ... -->
+</Presentation>
+```
+
+You might have noticed that in the examples we use CSS grid layout properties, but don't specify `grid` for the slide display. That's because the default `display` option is set to `grid`.
+
+```svelte
+<Slide class="h-full place-content-center place-items-center">
+  <!-- centered -->
+</Slide>
+```
+
+You can change the slide animation, show or hide the controls, and show the current slide in the URL hash among other options. You can find the [default Animotion presentation options](https://github.com/animotionjs/animotion/blob/main/src/lib/components/presentation.svelte#L30-L65) in the source code on GitHub.
+
+## Custom slide transitions
+
+If you want, you can override the default slide transitions in `app.css`:
+
+```css
+.reveal .slides > section {
+  transition:
+    transform 0.6s ease,
+    opacity 0.6s ease !important;
+
+  &.past {
+    transform: translateY(100%) scale(0.8) !important;
+    opacity: 0;
+  }
+
+  &.present {
+    transform: translateY(0) scale(1) !important;
+    opacity: 1;
+  }
+
+  &.future {
+    transform: translateY(100%) scale(0.8) !important;
+    opacity: 0;
+  }
+}
+```
+
+# Transitions
+
+> ⚠️ Animotion uses the [View Transitions API (single document)](https://caniuse.com/view-transitions) which is Baseline newly available since Oct 2025. The core presentation features still work in older browsers, but they might not show all transitions.
+
+## Animating elements
+
+You can use the `<Transition>` component to animate changes in your slide like magic:
+
+<Transition />
+
+```svelte
+<script lang="ts">
+  import { Presentation, Slide, Transition } from '@animotion/core';
+
+  let text: HTMLParagraphElement;
+</script>
+
+<Presentation>
+  <Slide class="h-full place-content-center place-items-center">
+    <Transition visible>
+      <p bind:this={text} class="text-8xl font-bold drop-shadow-sm">🪄 Animotion</p>
+    </Transition>
+
+    <Transition do={() => text.classList.replace('text-8xl', 'text-6xl')} class="mt-16">
+      <img class="rounded-lg drop-shadow-sm" src="/nod-of-approval.gif" />
+    </Transition>
+  </Slide>
+</Presentation>
+```
+
+## How transitions work
+
+Animotion uses the [View Transitions API](https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API) to animate the layout of your slides.
+
+The `<Transition>` component is a `<div>` wrapper with a unique `view-transition-name` name, so the browser knows what element should transition after the DOM changed:
+
+```svelte
+<div style="view-transition-name: name">
+  <!-- ... -->
+</div>
+```
+
+You can use the `<Transition>` component purely as a layout animation trigger without having to pass any children:
+
+```svelte
+<Transition do={() => /* code that causes DOM change */ } />
+```
+
+Animotion is going to run the function passed to the `do` prop before animating the layout, and invoke the `startViewTransition()` method on the document.
+
+This is very useful for revealing or hiding elements like a code block and its output:
+
+```svelte
+<script>
+  import { Code, Slide, Transition } from '@animotion/core';
+  import Example from './example.svelte';
+
+  let state = $state('none');
+</script>
+
+<Slide>
+  {#if state === 'code'}
+    <Transition visible>
+      <Code />
+    </Transition>
+  {/if}
+
+  {#if state === 'output'}
+    <Transition visible>
+      <Example />
+    </Transition>
+  {/if}
+
+  <Transition do={() => (state = 'code')} />
+  <Transition do={() => (state = 'output')} />
+</Slide>
+```
+
+In this example we use the `visible` prop to show the element by default, so we can smoothly animate the layout when `state` changes using `<Transition>` as a layout animation trigger.
+
+If you don't want the `<Transition>` element to affect the layout when using it between elements, you can use the `hidden` prop to hide it:
+
+```svelte
+<!-- content -->
+<Transition do={() => /* code that causes DOM change */ } hidden />
+<!-- content -->
+```
+
+## Custom entry and exit transitions
+
+You can find the default view transition styles in `app.css`:
+
+```css
+/* view transitions */
+html {
+  view-transition-name: none;
+}
+
+/* all view transitions */
+::view-transition-group(*) {
+  animation-duration: var(--view-transition-duration);
+  animation-timing-function: var(--ease);
+}
+
+/* entry transition */
+::view-transition-new(*):only-child {
+  animation: scale-in var(--view-transition-duration) var(--ease);
+}
+
+/* exit transition */
+::view-transition-old(*):only-child {
+  animation: scale-out var(--view-transition-duration) var(--ease);
+}
+
+@keyframes scale-in {
+  from {
+    scale: 0;
+    opacity: 0;
+  }
+}
+
+@keyframes scale-out {
+  to {
+    scale: 0;
+    opacity: 0;
+  }
+}
+```
+
+You can create your own entry and exit animations inside `app.css`:
+
+```css
+@keyframes rotate {
+  from {
+    opacity: 0;
+  }
+  20% {
+    rotate: 0deg;
+  }
+  40% {
+    opacity: 1;
+  }
+  to {
+    rotate: 360deg;
+  }
+}
+```
+
+...then pass the animation to the `entry` and `exit` props of the `<Transition>` component, including the `duration` and `delay` in seconds:
+
+```svelte
+{#each items as item, i}
+  <Transition entry="rotate" exit="scale-out" duration={1} delay={i * 0.1} visible />
+{/each}
+```
+
+## Transition order
+
+You can use the `order` prop to specify the order in which the elements should transition:
+
+<TransitionOrder />
+
+```svelte
+<script>
+  import { Presentation, Slide, Transition } from '@animotion/core';
+</script>
+
+<Presentation>
+  <Slide class="h-full place-content-center place-items-center">
+    <div class="grid grid-cols-2 grid-rows-2 gap-4">
+      <Transition order={4}>1</Transition>
+      <Transition order={3}>2</Transition>
+      <Transition order={2}>3</Transition>
+      <Transition order={1} visible>4</Transition>
+    </div>
+  </Slide>
+</Presentation>
+```
+
+## Layout animations
+
+You can do impossible layout animations, like animating between a `flex` and `grid` layout among other things — the only thing you have to do is change the DOM, and leave the rest to Animotion:
+
+<Sandbox slug="layout-animation" />
+
+```svelte
+<script>
+  import { Presentation, Slide, Transition } from '@animotion/core';
+
+  let items = $state([1, 2, 3, 4]);
+  let layout = $state('flex gap-4');
+</script>
+
+<Presentation>
+  <Slide class="h-full place-content-center place-items-center">
+    <div class={layout}>
+      {#each items as item (item)}
+        <Transition
+          class="grid h-[180px] w-[180px] place-content-center rounded-2xl border-t-2 border-white bg-gray-200 text-6xl font-semibold text-black shadow-2xl"
+          visible
+        >
+          {item}
+        </Transition>
+      {/each}
+    </div>
+
+    <!-- you can pass a transitions array for convenience -->
+    <Transition
+      transitions={[
+        () => (layout = 'grid grid-cols-2 grid-rows-2 gap-4'),
+        () => (items = [4, 3, 2, 1]),
+        () => (items = [2, 1, 4, 3]),
+        () => (items = [4, 3, 2, 1]),
+        () => (items = [1, 2, 3, 4]),
+        () => (layout = 'flex gap-4')
+      ]}
+    />
+  </Slide>
+</Presentation>
+```
+
+# Actions
+
+## Control the presentation
+
+You can use the `<Action>` component to step through the presentation, and run code that updates the presentation:
+
+<Actions />
+
+```svelte
+<script lang="ts">
+  import { Presentation, Slide, Code, Action } from '@animotion/core';
+
+  let code: Code;
+</script>
+
+<Presentation>
+  <Slide class="h-full place-content-center place-items-center">
+    <Code
+      bind:this={code}
+      lang="svelte"
+      theme="poimandres"
+      code={`
+        <script>
+          let count = $state(0);
+        <\/script>
+
+        <button onclick={() => count++}>
+          {count}
+        </button>
+      `}
+    />
+
+    <Action do={() => code.selectLines`2`} />
+    <Action do={() => code.select`count++`} />
+    <Action do={() => code.select`{count}`} />
+    <Action do={() => code.selectLines`*`} />
+  </Slide>
+</Presentation>
+```
+
+## Multiple actions
+
+Instead of having to define each action separately, you can use the `actions` prop to define multiple actions.
+
+```svelte
+<Action
+  actions={[
+    () => code.selectLines`2`,
+    () => code.select`5 count ++`,
+    () => code.select`{count}`,
+    () => code.selectLines`*`
+  ]}
+/>
+```
+
+## Undo
+
+You can pass an optional `undo` prop with a callback to the `<Action>` component that runs when you go back a step if you need to revert to some previous state:
+
+```svelte
+<Action
+  do={() => /* ... */}
+  actions={() => /* ... */}
+  undo={() => /* ... */}
+/>
+```
+
+# Code
+
+## Animating code
+
+The `<Code>` component uses [Shiki](https://shiki.style/) for beautiful syntax highlighting:
+
+<CodeBlock />
+
+```svelte
+<script lang="ts">
+  import { Presentation, Slide, Code, Action } from '@animotion/core';
+
+  let code: Code;
+</script>
+
+<Presentation>
+  <Slide class="h-full place-content-center place-items-center">
+    <Code
+      bind:this={code}
+      lang="svelte"
+      theme="poimandres"
+      code={`
+        <script>
+          let count = 0;
+          $: double = count * 2;
+        <\/script>
+
+        <button on:click={() => count++}>
+          {double}
+        </button>
+      `}
+      options={{ duration: 1000, stagger: 0.3, lineNumbers: true, containerStyle: false }}
+    />
+
+    <Action
+      do={() =>
+        code.update`
+          <script>
+            let count = $state(0);
+            let double = $derived(count * 2);
+          <\/script>
+
+          <button onclick={() => count++}>
+            {double}
+          </button>
+        `}
+    />
+
+    <Action do={() => code.selectLines`2,3`} />
+    <Action do={() => code.selectLines`2-3,7`} />
+    <Action
+      do={() => {
+        code.select`double`;
+        code.selectAdd`{double}`;
+      }}
+    />
+    <Action do={() => code.selectLines`*`} />
+  </Slide>
+</Presentation>
+```
+
+You can pick one of many themes that come with Shiki, choose a language, and provide options to the `<Code />` component.
+
+## Animating code changes
+
+You can animate changes in your code by using the `update` method:
+
+```ts
+code.update`
+  <script>
+    let count = $state(0);
+    let double = $derived(count * 2);
+  <\/script>
+
+  <button onclick={() => count++}>
+    {double}
+  </button>
+`;
+```
+
+Animotion uses [Shiki Magic Move](https://shiki-magic-move.netlify.app/) to animate the code changes which does the diffing to know what changed, and then animates the changes.
+
+## Experimental code update API
+
+Having to pass the entire code string to the `update` method each time is tedious and repetitive. You can try the experimental code update API to surgically update the code:
+
+```svelte
+<Code
+  bind:this={code}
+  lang="svelte"
+  theme="poimandres"
+  code={`
+    <script lang="ts">
+      let count = $state(0);
+    <\/script>
+  `}
+/>
+```
+
+```ts
+// append code with an empty line
+code.append`
+  <button onclick={() => count += 1}>
+    // ...
+  </button>
+`;
+// insert code at line 3 with indent level of 1
+code.insert`3:1 let double = $derived(count * 2);`;
+// replace the exact code
+code.replace('// ...', '{count} * 2 = {double}');
+// remove line 3 and lines 6 to 8
+code.remove`3,6-8`;
+```
+
+## Code selection
+
+You can select lines of code:
+
+```ts
+// select line
+code.selectLines`2`;
+// select multiple lines
+code.selectLines`2,3`;
+// select lines range
+code.selectLines`2-3`;
+// select lines range and lines
+code.selectLines`2-3,7`;
+// select all lines
+code.selectLines`*`;
+```
+
+You can select parts of the code:
+
+```ts
+// select every token
+code.select`count`;
+// select first match
+code.select`count:0`;
+// select first match on line 4
+code.select`4 count:0`;
+// add another selection
+code.selectAdd`() => count++`;
+```
+
+The methods return a promise that is resolved when the transition is done:
+
+```svelte
+<Action
+  do={async () => {
+    await code.selectLines`2,3`;
+    await code.selectLines`2-3,7`;
+    await code.select`count`;
+    await code.selectLines`*`;
+  }}
+/>
+```
+
+Both the `selectLines` and `select` methods have additive counterparts, `selectLinesAdd` and `selectAdd`, which only add to the previous selection.
+
+## Code scrolling
+
+You might have a scrollable code block:
+
+```svelte
+<Code
+  bind:this={code}
+  lang="svelte"
+  theme="poimandres"
+  code={`...`}
+  class="h-[400px] overflow-y-auto"
+  options={{ duration: 600, stagger: 0.3, containerStyle: false }}
+/>
+```
+
+You can scroll to a line of code using the `scrollToLine` method:
+
+```ts
+await code.scrollToLine`2`;
+```
+
+You can hide the scrollbar using CSS:
+
+```css
+pre::-webkit-scrollbar {
+  display: none;
+}
+```
+
+You can also create a Tailwind class:
+
+```css
+@utility no-scrollbar {
+  @apply [scrollbar-width:none] [&::-webkit-scrollbar]:hidden;
+}
+```
+
+## Using expressions
+
+The `update`, `selectLines`, and `scrollToLine` tag functions support expressions:
+
+```svelte
+<script lang="ts">
+  let expression = 'false';
+</script>
+
+<!-- ... -->
+
+<Action
+  do={() => {
+    expression = 'true';
+    code.update`let bool = ${expression}`;
+  }}
+>
+```
+
+## Code indentation
+
+Indenting code creates extra whitespace:
+
+```svelte
+<Code
+  code={`
+->-><script>
+->->->let count = 0;
+->->->$: double = count * 2;
+->-><\/script>
+
+->-><button on:click={() => count++}>
+->->->{double}
+->-></button>
+  `}
+/>
+```
+
+Animotion detects if you're using tabs or spaces and dedents the code for you:
+
+```svelte
+<Code
+  code={`
+    <script>
+    ->let count = 0;
+    ->$: double = count * 2;
+    <\/script>
+    <button on:click={() => count++}>
+    ->{double}
+    </button>
+  `}
+/>
+```
+
+If you want to opt-out of this feature, you can set `autoIndent` to false:
+
+```svelte
+<Code autoIndent={false} />
+```
+
+## Chaining code animations
+
+Instead of creating actions for the code animations yourself, you can use the `codes` prop to create them for you:
+
+```svelte
+<script lang="ts">
+  import { Code } from '@animotion/core';
+
+  // get a reference to the instance
+  let code: Code;
+</script>
+
+<Code
+  ref={(ref) => (code = ref)}
+  lang="svelte"
+  theme="poimandres"
+  codes={[
+    `
+      <script>
+        let count = 0;
+        $: double = count * 2;
+      <\/script>
+
+      <button on:click={() => count++}>
+        {double}
+      </button>
+    `,
+    `
+      <script>
+        let count = $state(0);
+        let double = $derived(count * 2);
+      <\/script>
+
+      <button onclick={() => count++}>
+        {double}
+      </button>
+    `
+  ]}
+/>
+
+<Action
+  undo={() => {
+    code.selectLines`*`;
+  }}
+  actions={[
+    () => code.selectLines`2,3`,
+    () => code.selectLines`2-3,7`,
+    () => {
+      code.select`double`;
+      code.selectAdd`{double}`;
+    },
+    () => code.selectLines`*`
+  ]}
+/>
+```
+
+## Escape closing tags
+
+Having a closing tag like `</script>` in your code block is going to cause problems because Svelte thinks you're trying to close the `<script>` tag in your component. To solve this problem use the backslash character to escape it:
+
+```svelte
+<Code>
+  code={`
+    <script>
+      // ...
+    <\/script>
+  `}
+</Code>
+```
+
+# Motion
+
+## Procedural animations
+
+Sometimes you need to animate values outside of CSS like SVG and Canvas values. Instead of reaching for a JavaScript library, you can use Motion by importing `@animotion/motion`:
+
+<Tween />
+
+```svelte
+<script>
+  import { Presentation, Slide, Action } from '@animotion/core';
+  import { tween } from '@animotion/motion';
+
+  let cx = tween(0);
+
+  async function animate() {
+    await cx.to(600);
+    await cx.to(0, { delay: 300 });
+  }
+</script>
+
+<Presentation>
+  <Slide>
+    <svg width="800" height="200" viewBox="-100 0 800 200">
+      <circle cx={cx.current} cy={100} r={100} fill="#00ffff" />
+      <text
+        x={cx.current}
+        y={100}
+        font-family="Monaspace Neon"
+        font-size="48px"
+        text-anchor="middle"
+        dominant-baseline="middle"
+      >
+        {cx.current.toFixed(0)}
+      </text>
+    </svg>
+
+    <Action do={animate} />
+  </Slide>
+</Presentation>
+```
+
+To create a value that you want to animate over time, use the `tween` method. To animate the value, use the `to` method. You can use the `await` keyword to wait for the animation to finish.
+
+You can animate any value, including CSS properties using the `style` attribute, or Svelte's `style:` directive:
+
+<Scale />
+
+```svelte
+<script>
+  import { Presentation, Slide, Action } from '@animotion/core';
+  import { tween } from '@animotion/motion';
+
+  let text = tween(1);
+
+  async function animate() {
+    await text.to(3);
+    await text.to(1);
+  }
+</script>
+
+<Presentation>
+  <Slide>
+    <!-- using the style attribute -->
+    <p style="scale: {text.current}">Motion</p>
+
+    <!-- using the Svelte directive -->
+    <p style:scale={text.current}>Motion</p>
+
+    <Action do={animate} />
+  </Slide>
+</Presentation>
+```
+
+## Tween multiple values
+
+You can `tween` a single value, objects, arrays, and override the default animation options using the `duration`, `delay`, and `easing` options:
+
+<Options />
+
+```svelte
+<script>
+  import { Presentation, Slide, Action } from '@animotion/core';
+  import { tween } from '@animotion/motion';
+
+  const circle = tween({ x: 0, y: 100, r: 100, fill: '#00ffff' }, { duration: 1500 });
+
+  async function animate() {
+    await circle.to({ x: 600, fill: '#ffff00' }, { delay: 300 });
+    await circle.to({ x: 0, fill: '#00ffff' });
+  }
+</script>
+
+<Presentation>
+  <Slide>
+    <svg viewBox="-100 0 800 200">
+      <circle cx={circle.x} cy={circle.y} r={circle.r} fill={circle.fill} />
+    </svg>
+
+    <Action do={animate} />
+  </Slide>
+</Presentation>
+```
+
+You can use `obj.current.property` to access the object property, but Motion creates an accessor for every property, so you can omit `.current` and say `obj.property`.
+
+## Combine animations
+
+If you want to play multiple animations at the same time without having to think about where to put the `await` keyword you can combine them using the `all` helper method:
+
+<All />
+
+```svelte
+<script>
+  import { Presentation, Slide, Action } from '@animotion/core';
+  import { tween, all } from '@animotion/motion';
+
+  let circle = tween({ x: 0, y: 100, r: 100, fill: '#00ffff' });
+  let text = tween({ count: 0 });
+
+  async function animate() {
+    await all(circle.to({ x: 600, fill: '#ffff00' }), text.to({ count: 600 }));
+    await all(circle.to({ x: 0, fill: '#00ffff' }), text.to({ count: 0 }));
+  }
+</script>
+
+<Presentation>
+  <Slide>
+    <svg width="800" height="200" viewBox="-100 0 800 200">
+      <circle cx={circle.x} cy={circle.y} r={circle.r} fill={circle.fill} />
+
+      <text
+        x={circle.x}
+        y={circle.y}
+        font-family="Monaspace Neon"
+        font-size={circle.r * 0.4}
+        text-anchor="middle"
+        dominant-baseline="middle"
+      >
+        {text.count.toFixed(0)}
+      </text>
+    </svg>
+
+    <Action do={animate} />
+  </Slide>
+</Presentation>
+```
+
+## Sound effects
+
+Besides playing animations you can play sounds using the `sfx` method. After you place your sounds in the `static` folder at the root of your project, they
+become available from the root `/` of your site:
+
+```svelte
+<script>
+  import { Presentation, Slide } from '@animotion/core';
+  import { tween } from '@animotion/motion';
+
+  let circle = tween({ x: 0 });
+
+  async function animate() {
+    await circle.sfx('/sfx/transition.mp3').to({ x: 400 });
+  }
+</script>
+
+<Presentation>
+  <Slide in={animate}>
+    <svg viewBox="0 0 400 400">
+      <circle cx={circle.x} cy={200} r={100} fill="#00ffff" />
+    </svg>
+  </Slide>
+</Presentation>
+```
+
+## Convenience methods
+
+You can round the numbers of the entire animated object instead of each object property separately using the `.rounded`, or `.round(n)` method:
+
+```svelte
+<script>
+  import { Presentation, Slide } from '@animotion/core';
+  import { tween } from '@animotion/motion';
+
+  let value = tween({ x: 0, y: 0 });
+</script>
+
+<Presentation>
+  <Slide>
+    <!-- 👎 before: -->
+    <p>x: {value.x.toFixed(0)}, y: {value.y.toFixed(0)}</p>
+
+    <!-- 👍 after: -->
+    <p>{JSON.stringify(value.current.rounded)}</p>
+
+    <!-- 👍 if you want more precision -->
+    <p>{JSON.stringify(value.current.round(2))}</p>
+  </Slide>
+</Presentation>
+```
+
+Instead of reloading the page to reset the state of your animation,
+you can use the `reset` method on the `tween` to reset the animation value back to its initial state.
+
+```svelte
+<script>
+  import { Presentation, Slide } from '@animotion/core';
+  import { tween } from '@animotion/motion';
+
+  let value = tween(0);
+</script>
+
+<Presentation>
+  <Slide out={() => value.reset()}>
+    <!-- ... -->
+  </Slide>
+</Presentation>
+```
+
+# Styling
+
+## Using Tailwind CSS
+
+You have complete control over unstyled elements using Tailwind:
+
+<Tailwind />
+
+```svelte
+<script>
+  import { Presentation, Slide } from '@animotion/core';
+
+  let circle = 'grid h-[200px] w-[200px] place-content-center rounded-full';
+</script>
+
+<Presentation>
+  <Slide class="h-full place-content-center place-items-center">
+    <div class="flex gap-8 font-semibold text-gray-900">
+      <div class="{circle} bg-red-400">red</div>
+      <div class="{circle} bg-green-400">green</div>
+      <div class="{circle} bg-blue-400">blue</div>
+    </div>
+  </Slide>
+</Presentation>
+```
+
+Thanks to the Tailwind compiler you can pass arbitrary values surrounded by brackets like `h-[240px]` if the provided utility classes aren't enough.
+
+If you enjoy Tailwind get the [Tailwind CSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss) extension for VS Code to make your life easier. To keep things organized Animotion also sorts the Tailwind classes for you.
+
+## Using regular CSS
+
+You can write regular CSS inside a `<style>` tag in Svelte. Styles are scoped to the component, so you don't have to worry about the class name being unique:
+
+```svelte
+<script>
+  import { Presentation, Slide } from '@animotion/core';
+</script>
+
+<Presentation>
+  <Slide>
+    <div class="circles">
+      <div class="circle red">red</div>
+      <div class="circle green">green</div>
+      <div class="circle blue">blue</div>
+    </div>
+  </Slide>
+</Presentation>
+
+<style>
+  .circles {
+    display: flex;
+    gap: 2rem;
+    font-weight: 600;
+    color: #111827;
+  }
+
+  .circle {
+    width: 240px;
+    height: 240px;
+    display: grid;
+    place-content: center;
+    border-radius: 50%;
+  }
+
+  .red {
+    background-color: #f87171;
+  }
+
+  .green {
+    background-color: #4ade80;
+  }
+
+  .blue {
+    background-color: #1e3a8a;
+  }
+</style>
+```
+
+## Programmatic slides
+
+Animotion exposes the `Reveal` instance using the `getPresentation` method, enabling you to use the API to control slides programmatically:
+
+```svelte
+<script>
+  import { getPresentation } from '@animotion/core';
+
+  const presentation = getPresentation();
+</script>
+
+<button onclick={() => presentation.slides.prev()}>prev</button>
+<button onclick={() => presentation.slides.next()}>next</button>
+```
+
+You can look at the available [API methods](https://revealjs.com/api/).
+
+# File-based slides
+
+You can have slides in one file or split them into multiple files by default, but Animotion also provides a file-based slides option during the setup if you want the slides to be managed for you.
+
+## Using file-based slides
+
+This is how you create slides using the default setup:
+
+```svelte
+<!-- routes/+page.svelte -->
+<script>
+  import { Presentation, Slide } from '@animotion/core';
+</script>
+
+<Presentation>
+  <Slide class="h-full place-content-center place-items-center">
+    <p class="text-8xl font-bold drop-shadow-sm">🪄 Animotion</p>
+  </Slide>
+
+  <Slide class="h-full place-content-center place-items-center">
+    <img class="rounded-lg drop-shadow-sm" src="/nod-of-approval.gif" />
+  </Slide>
+</Presentation>
+```
+
+This is how you create slides using file-based slides:
+
+```svelte
+<!-- slides/100/slide.svelte -->
+<p class="text-8xl font-bold drop-shadow-sm">🪄 Animotion</p>
+```
+
+```svelte
+<!-- slides/200/slide.svelte -->
+<img class="rounded-lg drop-shadow-sm" src="/nod-of-approval.gif" />
+```
+
+You can number the slides however you want since slides are sorted lowest to highest based on the number — another benefit of file-based slides is that you can have assets related to the slide in the same folder.
+
+## Passing props
+
+If you need to pass props to the `<Slide>` use `<script module>`:
+
+```svelte
+<script module>
+  import { defineProps } from '@animotion/core';
+
+  export const props = defineProps({
+    in: () => alert('in'),
+    out: () => alert('out')
+  });
+</script>
+
+<!-- /slides/100/slide.svelte -->
+<p class="text-8xl font-bold drop-shadow-sm">🪄 Animotion</p>
+```
+
+For regular imports use the `<script>` tag:
+
+```svelte
+<script module>
+  import { defineProps } from '@animotion/core';
+
+  export const props = defineProps({
+    in: () => alert('in'),
+    out: () => alert('out')
+  });
+</script>
+
+<script>
+  import { Transition } from '@animotion/core';
+</script>
+
+<!-- slides/100/slide.svelte -->
+<Transition>
+  <p class="text-8xl font-bold drop-shadow-sm">🪄 Animotion</p>
+</Transition>
+```
+
+## File-based slides setup
+
+You can also set up file-based slides yourself by copying this code inside `src/routes/+page.svelte`:
+
+```svelte
+<!-- routes/+page.svelte -->
+<script>
+  import { Presentation, Slides } from '@animotion/core';
+</script>
+
+<Presentation>
+  <Slides center={true} />
+</Presentation>
+```
+
+After that you can create slides inside the `src/slides` folder.
+
+# Recording videos
+
+## Using the recorder
+
+You can record your presentation using the `<Recorder>` component:
+
+```svelte
+<script>
+  import { Recorder } from '@animotion/core';
+</script>
+
+<Recorder />
+```
+
+- After you import the `<Recorder>` component you're going to be asked to give permission to share your screen, and microphone
+- Select the window, or screen you want to record, and press `F11` to fullscreen your browser and start recording
+
+## Default settings
+
+The default settings give you a nice balance of quality, and file size but you can use the [YouTube recommended upload encoding settings](https://support.google.com/youtube/answer/1722171?hl=en#zippy=%2Cbitrate) to change it.
+
+> ⚠️ Before you start recording do a test recording to make sure everything is working properly, and adjust the settings accordingly.
+
+These are the default video settings:
+
+```svelte
+<script>
+  import { Recorder } from '@animotion/core';
+</script>
+
+<Recorder
+  codec="video/mp4"
+  fps={60}
+  videoBitrate={2500}
+  audioBitrate={320}
+  systemAudio={true}
+  useTimer={true}
+  useMicrophone={true}
+/>
+```
+
+- **MP4** container (**VP9** video codec, **Opus** audio codec)
+- **60** FPS
+- **2,5 mbps** (2500 kbps) video bitrate
+- **320 kbps** audio bitrate
+- Captures system audio
+- **Timer** enabled
+- **Microphone** enabled
+
+## Video output format
+
+You can change the video container, and codecs like in this example which uses the [AVC (H.264)](https://developer.mozilla.org/en-US/docs/Web/Media/Formats/Video_codecs#avc_h.264) video codec, and [AAC](https://developer.mozilla.org/en-US/docs/Web/Media/Formats/Audio_codecs#aac_advanced_audio_coding) for the audio codec:
+
+```svelte
+<script>
+  import { Recorder } from '@animotion/core';
+</script>
+
+<Recorder codec="video/mp4;codecs='avc1.4d002a,mp4a.40.2'" />
+```
+
+For available options you can read the [Web video codec guide](https://developer.mozilla.org/en-US/docs/Web/Media/Formats/Video_codecs) for the video codec options, and [Web audio codec guide](https://developer.mozilla.org/en-US/docs/Web/Media/Formats/Audio_codecs) for the audio codec options.
+
+# Speaker notes
+
+You can write down notes inside the `<Notes>` component for the current slide which is visible when you press the `S` key on the keyboard.
+
+![Speaker notes](/notes.png)
+
+```svelte
+<script>
+  import { Presentation, Slide, Notes } from '@animotion/core';
+</script>
+
+<Presentation plugins={{ notes: true }}>
+  <Slide>
+    <p>Horizontal 1</p>
+    <Notes>Don't make eye contact</Notes>
+  </Slide>
+
+  <Slide>Horizontal 2</Slide>
+</Presentation>
+```
+
+# Math
+
+You can use [KaTeX](https://katex.org/) to write math formulas.
+
+<Katex />
+
+```svelte
+<script lang="ts">
+  import { Presentation, Slide, Transition } from '@animotion/core';
+</script>
+
+<Presentation plugins={{ math: true }}>
+  <Slide class="h-full place-content-center place-items-center">
+    <Transition>
+      <p>The probability of getting \(k\) heads when flipping \(n\) coins</p>
+    </Transition>
+
+    <Transition>
+      {`
+        \\[P(E) = {n \\choose k} p^k (1-p)^{ n-k} \\]
+      `}
+    </Transition>
+  </Slide>
+</Presentation>
+```

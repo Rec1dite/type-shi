@@ -1,0 +1,20 @@
+{
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true,
+
+        // ".agents": true,
+        // ".direnv": true,
+        // ".vscode": true,
+        // ".svelte-kit": true,
+        // "node_modules": true,
+
+        // ".envrc": true,
+        // ".gitignore": true,
+        // "flake.nix": true,
+        // "flake.lock": true,
+    }
+}
