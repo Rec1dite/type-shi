@@ -1,98 +1,64 @@
 <script lang="ts">
-	import { Code, Transition, Action } from '@animotion/core'
-	import { tween } from '@animotion/motion'
+	import Title from '$lib/components/title.svelte'
+	import Bullet from '$lib/components/bullet.svelte'
 
-	let text: HTMLParagraphElement
-	let code: ReturnType<typeof Code>
-	let circle = tween({ x: 0, y: 80, r: 80, fill: '#00ffff' })
+	const spectrum = [
+		{
+			label: 'Runtime',
+			desc: 'crash logs · repros · debugging',
+			card: 'border-ctp-red/40 text-ctp-red',
+			dot: 'bg-ctp-red'
+		},
+		{
+			label: 'Compile time',
+			desc: 'red squiggles in your editor',
+			card: 'border-ctp-peach/40 text-ctp-peach',
+			dot: 'bg-ctp-peach'
+		},
+		{
+			label: 'Type level',
+			desc: 'invalid states unrepresentable',
+			card: 'border-ctp-green/40 text-ctp-green',
+			dot: 'bg-ctp-green'
+		}
+	]
 </script>
 
-<Transition
-	do={async () => {
-		text.classList.replace('text-6xl', 'text-8xl')
-		await code.update``
-	}}
->
-	<p bind:this={text} class="text-8xl font-bold drop-shadow-sm">🪄 Animotion</p>
-</Transition>
+<div class="flex h-full w-full flex-col justify-center px-14">
+	<div class="anim">
+		<Title>Why Types?</Title>
+	</div>
 
-<Transition
-	do={async () => {
-		text.classList.replace('text-8xl', 'text-6xl')
-		await code.update`
-			async function animate() {
-				// ...
-			}
-		`
-		await circle.to({ x: 0, fill: '#00ffff' })
-	}}
-	class="mt-16"
->
-	<Code
-		bind:this={code}
-		lang="ts"
-		theme="poimandres"
-		code={``}
-		options={{ duration: 600, stagger: 0.3, containerStyle: false }}
-	/>
-</Transition>
+	<div class="anim mt-6 w-full" style="--d: 0.12s">
+		<Bullet>The earlier a bug dies, the cheaper it is</Bullet>
+	</div>
 
-<Transition
-	do={async () => {
-		await code.update`
-			async function animate() {
-				// ...
-			}
-		`
-		await circle.to({ x: 0, fill: '#00ffff' })
-	}}
-	class="mt-16"
->
-	<svg width="560" height={circle.r * 2} viewBox="-80 0 560 {circle.r * 2}">
-		<circle cx={circle.x} cy={circle.y} r={circle.r} fill={circle.fill} />
-		<text
-			x={circle.x}
-			y={circle.y}
-			font-size={circle.r * 0.4}
-			font-family="Monaspace Neon"
-			text-anchor="middle"
-			dominant-baseline="middle"
+	<p class="anim mt-6 text-center text-sm uppercase tracking-widest text-ctp-overlay2" style="--d: 0.22s">
+		bug cost spectrum
+	</p>
+	<div class="mt-3 grid grid-cols-3 gap-3">
+		{#each spectrum as seg, i}
+			<div
+				class="anim rounded-xl border bg-ctp-mantle px-4 py-3 {seg.card}"
+				style="--d: {0.3 + i * 0.09}s"
+			>
+				<p class="flex items-center gap-2 text-lg font-medium">
+					<span class="h-2 w-2 rounded-full {seg.dot}"></span>
+					{seg.label}
+				</p>
+				<p class="mt-1 text-sm leading-snug text-ctp-overlay1">{seg.desc}</p>
+			</div>
+		{/each}
+	</div>
+
+	<div class="anim mt-8 w-full" style="--d: 0.58s">
+		<div
+			class="flex flex-wrap items-baseline gap-x-4 gap-y-1 rounded-xl border border-ctp-mauve/40 bg-ctp-mantle px-6 py-4"
 		>
-			{circle.x.toFixed(0)}
-		</text>
-	</svg>
-</Transition>
-
-<Action
-	actions={[
-		async () => {
-			await code.update`
-				async function animate() {
-					await circle.to({ x: 400, fill: '#ffff00' })
-				}
-			`
-			await code.selectLines`2`
-			await circle.to({ x: 400, fill: '#ffff00' })
-		},
-		async () => {
-			await code.update`
-				async function animate() {
-					await circle.to({ x: 400, fill: '#ffff00' })
-					await circle.to({ x: 0, fill: '#00ffff' })
-				}
-			`
-			await code.selectLines`3`
-			await circle.to({ x: 0, fill: '#00ffff' })
-		},
-		async () => {
-			await code.selectLines`*`
-			await code.update`
-				async function animate() {
-					await circle.to({ x: 400, fill: '#ffff00' })
-					await circle.to({ x: 0, fill: '#00ffff' })
-				}
-			`
-			await circle.to({ x: 0, fill: '#00ffff' })
-		},
-	]}
-/>
+			<span class="text-2xl font-medium text-ctp-mauve">Model checking</span>
+			<span class="text-xl text-ctp-overlay1">
+				the compiler as a proof-checker - a passing program is a proof
+			</span>
+		</div>
+	</div>
+</div>

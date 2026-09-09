@@ -1,54 +1,41 @@
 <script lang="ts">
-	import { Transition } from '@animotion/core'
-
-	let items = $state([1, 2, 3, 4])
-	let layout = $state('flex gap-4')
+	import Title from '$lib/components/title.svelte'
+	import Bullet from '$lib/components/bullet.svelte'
 </script>
 
-<Transition>
-	<p class="text-6xl font-bold drop-shadow-sm">🪄 Layout Animations</p>
-</Transition>
-
-<Transition
-	do={() => {
-		items = [1, 2, 3, 4]
-		layout = 'flex gap-4'
-	}}
-	class="mt-16"
->
-	<div class={layout}>
-		{#each items as item, i (item)}
-			<Transition
-				class="grid h-[180px] w-[180px] place-content-center rounded-2xl border-t-2 border-white bg-gray-200 text-6xl font-semibold text-black shadow-2xl"
-				entry="rotate"
-				duration={2}
-				delay={i * 0.1}
-				visible
-			>
-				{item}
-			</Transition>
-		{/each}
+<div class="flex h-full w-full flex-col justify-center px-14">
+	<div class="anim">
+		<Title>The Appeal</Title>
 	</div>
-</Transition>
 
-<Transition
-	transitions={[
-		() => {
-			layout = 'grid grid-cols-2 grid-rows-2 gap-4'
-			items = [4, 3, 2, 1]
-		},
-		() => {
-			layout = 'grid grid-cols-2 grid-rows-2 gap-4'
-			items = [2, 1, 4, 3]
-		},
-		() => {
-			layout = 'grid grid-cols-2 grid-rows-2 gap-4'
-			items = [4, 3, 2, 1]
-		},
-		() => {
-			layout = 'grid grid-cols-2 grid-rows-2 gap-4'
-			items = [1, 2, 3, 4]
-		},
-		() => (layout = 'flex gap-4'),
-	]}
-/>
+	<div class="anim mt-8 w-full" style="--d: 0.12s">
+		<Bullet tone="peach">
+			Design your own <em class="font-medium not-italic text-ctp-peach">tool / interface</em>
+		</Bullet>
+	</div>
+
+	<div class="anim mt-8 w-full" style="--d: 0.2s">
+		<Bullet tone="red">
+			Not just <em class="font-medium not-italic text-ctp-red">single-use</em>
+			implementations
+		</Bullet>
+	</div>
+
+	<div class="anim mt-8 w-full" style="--d: 0.28s">
+		<Bullet tone="green">
+			General-purpose <em class="font-medium not-italic text-ctp-green">tools</em>
+		</Bullet>
+	</div>
+
+	<div class="anim mt-8 w-full" style="--d: 0.36s">
+		<Bullet tone="sky">
+			Self-documenting - the types are their own docs
+		</Bullet>
+	</div>
+
+	<div class="anim mt-10 w-full" style="--d: 0.5s">
+		<p class="text-center text-2xl text-ctp-overlay1">
+			A direct, typed interface for the user - the developer
+		</p>
+	</div>
+</div>

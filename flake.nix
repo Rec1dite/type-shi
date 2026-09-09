@@ -13,6 +13,7 @@
     in pkgs.mkShell {
 
       packages = with pkgs; [
+        deno
         pnpm
         nodejs_latest
       ];

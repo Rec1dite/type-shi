@@ -6,15 +6,22 @@
         "**/.DS_Store": true,
         "**/Thumbs.db": true,
 
-        // ".agents": true,
-        // ".direnv": true,
-        // ".vscode": true,
-        // ".svelte-kit": true,
-        // "node_modules": true,
+        ".agents": true,
+        ".direnv": true,
+        ".vscode": true,
+        ".svelte-kit": true,
+        "node_modules": true,
 
-        // ".envrc": true,
-        // ".gitignore": true,
-        // "flake.nix": true,
-        // "flake.lock": true,
+        ".envrc": true,
+        ".gitignore": true,
+        "flake.nix": true,
+        "flake.lock": true,
+
+        "pnpm-*.yaml": true,
+        ".prettierrc": true,
+
+        "static": true,
+        "prompt.md": true,
+        "vite.config.ts": true,
     }
 }

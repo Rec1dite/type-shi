@@ -1,8 +1,7 @@
-@layer reset, presentation, overrides;
+@layer reset, presentation;
 
 /* fonts */
 @import '@fontsource/atkinson-hyperlegible';
-@import '@fontsource/monaspace-neon';
 @import '@fontsource/fira-code';
 
 /* presentation */
@@ -14,6 +13,11 @@
 
 /* catppuccin */
 @import '@catppuccin/tailwindcss/mocha.css';
+
+/* custom accent - the presentation's title red (from pres.typ) */
+@theme {
+    --color-ctp-accent: #fc607a;
+}
 
 @layer reset {
     /* reset */
@@ -29,13 +33,13 @@
 @layer presentation {
     /* defaults */
     :root {
-        --r-background-color: oklch(20% 0.01 272);
-        --r-main-font: 'Fira Code';
-        --r-main-font-size: 42px;
-        --r-main-color: oklch(98% 0.02 272);
+        --r-background-color: #1e1e2e; /* catppuccin mocha base */
+        --r-main-font: 'Atkinson Hyperlegible';
+        --r-main-font-size: 34px;
+        --r-main-color: #cdd6f4; /* catppuccin mocha text */
         --r-heading-font: 'Fira Code';
-        --r-code-font: 'Monaspace Neon';
-        --r-link-color: oklch(90.54% 0.15 194);
+        --r-code-font: 'Fira Code';
+        --r-link-color: #89dceb; /* catppuccin mocha sky */
         --ease: linear(
             0 0%,
             0.0036 9.62%,
@@ -87,10 +91,63 @@
     }
 }
 
+/* a touch more breathing room for the code blocks */
+.reveal pre {
+    font-size: 0.53em;
+}
+
+/* headings use the heading font (--r-heading-font is otherwise unused) */
+.reveal h1,
+.reveal h2,
+.reveal h3,
+.reveal h4,
+.reveal h5,
+.reveal h6 {
+    font-family: var(--r-heading-font);
+}
+
+/* 0.2s transitions between slides */
+.reveal .slides section,
+.reveal .backgrounds .slide-background {
+    transition-duration: 0.2s !important;
+}
+
+/* denser code blocks (used when two blocks share a slide) */
+.reveal pre.compact {
+    font-size: 0.44em;
+    line-height: 1.3;
+}
+
+/* inline code - catppuccin sky, like the raw text in pres.typ */
+.inline-code {
+    font-family: 'Fira Code';
+    font-size: 0.85em;
+    font-style: italic;
+    color: #89b4fa; /* catppuccin mocha blue */
+    white-space: nowrap;
+}
+
+/* entrance animations - every `.anim` element fades & slides in, staggered via
+   the `--d` custom property, all triggered automatically when its slide
+   becomes current (reveal marks it `.present`). Nothing needs key presses. */
+.reveal section .anim {
+    opacity: 0;
+}
+
+.reveal section.present .anim {
+    animation: fade-up 0.18s var(--ease) forwards;
+    animation-delay: var(--d, 0s);
+}
+
+/* view transition keyframes */
 @keyframes scale-in {
     from {
         scale: 0;
         opacity: 0;
+    }
+    to {
+        scale: 1;
+        opacity: 1;
     }
 }
 
@@ -98,6 +155,48 @@
     to {
         scale: 0;
         opacity: 0;
+    }
+}
+
+@keyframes fade-up {
+    from {
+        opacity: 0;
+        translate: 0 1rem;
+    }
+    to {
+        opacity: 1;
+        translate: 0;
+    }
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slide-in-left {
+    from {
+        opacity: 0;
+        translate: -1rem 0;
+    }
+    to {
+        opacity: 1;
+        translate: 0;
+    }
+}
+
+@keyframes pop {
+    0% {
+        opacity: 0;
+        scale: 0.7;
+    }
+    100% {
+        opacity: 1;
+        scale: 1;
     }
 }
 
