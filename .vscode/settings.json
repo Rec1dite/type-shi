@@ -23,5 +23,7 @@
         "static": true,
         "prompt.md": true,
         "vite.config.ts": true,
+
+        "docs": true,
     }
 }

@@ -10,30 +10,29 @@
 
 	<div class="anim mt-8 w-full" style="--d: 0.12s">
 		<Bullet tone="peach">
-			Design your own <em class="font-medium not-italic text-ctp-peach">tool / interface</em>
+			Contracts at <em class="font-medium not-italic text-ctp-peach">boundaries</em>
 		</Bullet>
 	</div>
 
-	<div class="anim mt-8 w-full" style="--d: 0.2s">
-		<Bullet tone="red">
-			Not just <em class="font-medium not-italic text-ctp-red">single-use</em>
-			implementations
-		</Bullet>
-	</div>
-
-	<div class="anim mt-8 w-full" style="--d: 0.28s">
-		<Bullet tone="green">
-			General-purpose <em class="font-medium not-italic text-ctp-green">tools</em>
-		</Bullet>
-	</div>
-
-	<div class="anim mt-8 w-full" style="--d: 0.36s">
+	<div class="anim mt-8 w-full" style="--d: 0.22s">
 		<Bullet tone="sky">
-			Self-documenting - the types are their own docs
+			Self-documenting
 		</Bullet>
 	</div>
 
-	<div class="anim mt-10 w-full" style="--d: 0.5s">
+	<div class="anim mt-8 w-full" style="--d: 0.32s">
+		<Bullet tone="green">
+			<em class="font-medium not-italic text-ctp-green">Exhaustive</em> checking
+		</Bullet>
+	</div>
+
+	<div class="anim mt-8 w-full" style="--d: 0.42s">
+		<Bullet tone="mauve">
+			General purpose <em class="font-medium not-italic text-ctp-mauve">tool building</em>
+		</Bullet>
+	</div>
+
+	<div class="anim mt-10 w-full" style="--d: 0.56s">
 		<p class="text-center text-2xl text-ctp-overlay1">
 			A direct, typed interface for the user - the developer
 		</p>

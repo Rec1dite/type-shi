@@ -60,26 +60,4 @@
 		{/each}
 	</div>
 
-	<div class="mt-8 flex w-full flex-col gap-4">
-		<div
-			class="anim flex flex-wrap items-baseline gap-x-4 gap-y-1 rounded-xl border border-ctp-peach/40 bg-ctp-mantle px-6 py-4"
-			style="--d: 0.55s"
-		>
-			<span class="font-mono text-2xl text-ctp-peach">&quot;a&quot; | &quot;b&quot;</span>
-			<span class="text-2xl text-ctp-overlay1">
-				literal unions are
-				<em class="font-medium not-italic text-ctp-peach">sum types</em>
-			</span>
-		</div>
-		<div
-			class="anim flex flex-wrap items-baseline gap-x-4 gap-y-1 rounded-xl border border-ctp-sky/40 bg-ctp-mantle px-6 py-4"
-			style="--d: 0.68s"
-		>
-			<span class="font-mono text-2xl text-ctp-sky">&#123;a&#125; &amp; &#123;b&#125;</span>
-			<span class="text-2xl text-ctp-overlay1">
-				object intersections are
-				<em class="font-medium not-italic text-ctp-sky">product types</em>
-			</span>
-		</div>
-	</div>
 </div>
